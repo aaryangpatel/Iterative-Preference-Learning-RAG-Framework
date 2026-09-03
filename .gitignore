@@ -173,12 +173,17 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
-# Cursor  
-#  Cursor is an AI-powered code editor.`.cursorignore` specifies files/directories to 
-#  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data
-#  refer to https://docs.cursor.com/context/ignore-files
+# Editors / OS
+.idea/
+.vscode/
 .cursorignore
 .cursorindexingignore
-
 .DS_Store
+Thumbs.db
 *.bak
+
+# Benchmark data (downloaded by scripts/setup_ragtime_benchmark.py)
+data/
+
+# Generated experiment runs, scores, and figures
+output/
