@@ -1,0 +1,59 @@
+benchmark_id: ragtime25_live
+data_root: data/benchmark/ragtime25
+topics_file: topics/ragtime25_main_eng.jsonl
+topic_filter: short
+assessed_topics_file: manifests/assessed_topics.json
+gold_nuggets_file: gold_nuggets/gold_nuggets.jsonl
+output_dir: output/benchmark
+dry_run: false
+max_topics: 3
+phases:
+  - generate
+  - evaluate
+  - report
+  - poster
+
+systems:
+  - preference_loop_full
+  - preference_loop_1round
+  - crucible_single
+  - crucible_dual_best
+  - vanilla_rag
+
+experiment:
+  experiment_id: ragtime25_live
+  team_id: research
+  char_limit: 2000
+  base_nuggets_count: 8
+  max_contrastive_nuggets: 10
+  output_dir: output/research
+
+  iteration:
+    max_rounds: 3
+    min_new_nuggets_to_continue: 1
+    stable_rounds_for_convergence: 2
+
+  document_source:
+    provider: ragtime_api
+    max_documents: 25
+    max_docs_per_nugget: 3
+    ragtime_pipeline: ragtime1
+    ragtime_collection: ragtime1
+    cache_dir: data/benchmark/ragtime25/cache
+
+  generation_profiles:
+    - name: abstractive
+      run_id_suffix: a
+      match_threshold: 0.25
+      prefer_shorter: true
+      extractive: false
+    - name: extractive
+      run_id_suffix: b
+      match_threshold: 0.35
+      extractive: true
+
+  improved_profile:
+    name: improved
+    run_id_suffix: improved
+    match_threshold: 0.3
+    extractive: false

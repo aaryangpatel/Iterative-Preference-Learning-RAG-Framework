@@ -1,0 +1,36 @@
+experiment_id: preference_loop
+team_id: research
+char_limit: 2000
+base_nuggets_count: 8
+max_contrastive_nuggets: 10
+output_dir: output/research
+
+iteration:
+  max_rounds: 3
+  min_new_nuggets_to_continue: 1
+  stable_rounds_for_convergence: 2
+
+document_source:
+  provider: ragtime_api
+  max_documents: 25
+  max_docs_per_nugget: 3
+  ragtime_pipeline: ragtime1
+  ragtime_collection: ragtime1
+  cache_dir: data/benchmark/ragtime25/cache
+
+generation_profiles:
+  - name: abstractive
+    run_id_suffix: a
+    match_threshold: 0.25
+    prefer_shorter: true
+    extractive: false
+  - name: extractive
+    run_id_suffix: b
+    match_threshold: 0.35
+    extractive: true
+
+improved_profile:
+  name: improved
+  run_id_suffix: improved
+  match_threshold: 0.3
+  extractive: false
