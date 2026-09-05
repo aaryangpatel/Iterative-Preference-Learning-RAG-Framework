@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Preference-Learning RAG</title>
+    <meta
+      name="description"
+      content="An iterative retrieval-augmented generation system that closes the loop between CRUCIBLE cited reports and PrefNugget contrastive nuggets."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;1,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="wordmark" href="#overview">Preference-Learning RAG</a>
+        <nav class="site-nav" aria-label="Primary">
+          <a href="#overview">Overview</a>
+          <a href="#method">Method</a>
+          <a href="#framework">Framework</a>
+          <a href="#benchmark">Benchmark</a>
+          <a href="#ideas">Ideas</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section id="overview" class="hero">
+        <div class="wrap">
+          <p class="eyebrow">TREC RAGTIME · Preference Learning</p>
+          <h1>Preference-Learning RAG</h1>
+          <p class="deck">
+            Iterative retrieval-augmented generation that closes the loop between
+            CRUCIBLE cited reports and PrefNugget contrastive nuggets.
+          </p>
+          <p class="meta-row">
+            <span>Aaryan Patel</span>
+            <span>Phillips Exeter Academy</span>
+            <span>Advisor Prof. Laura Dietz, UNH</span>
+            <span>MIT License</span>
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#method">See the method</a>
+            <a
+              class="btn btn-ghost"
+              href="https://github.com/aaryangpatel/RAG"
+              >GitHub repository</a
+            >
+          </div>
+        </div>
+      </section>
+
+      <section id="method" class="section">
+        <div class="wrap split">
+          <div class="reveal">
+            <p class="section-kicker">Method</p>
+            <h2>Preference feedback writes the next report.</h2>
+            <p>
+              CRUCIBLE produces a cited report from a request-derived nugget
+              bank. PrefNugget compares two reports, then extracts questions the
+              winner answered more completely than the loser. Those contrastive
+              nuggets are merged into the bank and used to generate a challenger.
+            </p>
+            <p class="quiet">
+              Round 0 is the dual pair. Rounds 1+ generate one challenger. The
+              loop stops when <code>research/convergence.py</code> hits the
+              round limit, finds no new nuggets for several rounds, or keeps the
+              same champion. Defaults from
+              <code>experiments/preference_loop.yml</code>:
+              <code>max_rounds: 3</code>, <code>base_nuggets_count: 8</code>,
+              <code>max_contrastive_nuggets: 10</code>.
+            </p>
+          </div>
+
+          <div class="loop-panel reveal" data-loop>
+            <div class="loop-head">
+              <p class="loop-label">Closed loop</p>
+              <p class="loop-hint">Click a step, or use the arrow keys</p>
+            </div>
+            <ol class="loop-steps" role="list">
+              <li>
+                <button type="button" class="loop-node is-current" data-step="0">
+                  <span class="loop-index">01</span>
+                  <span class="loop-name">Retrieve</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="loop-node" data-step="1">
+                  <span class="loop-index">02</span>
+                  <span class="loop-name">Dual reports</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="loop-node" data-step="2">
+                  <span class="loop-index">03</span>
+                  <span class="loop-name">Judge</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="loop-node" data-step="3">
+                  <span class="loop-index">04</span>
+                  <span class="loop-name">Contrast</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="loop-node" data-step="4">
+                  <span class="loop-index">05</span>
+                  <span class="loop-name">Merge</span>
+                </button>
+              </li>
+              <li>
+                <button type="button" class="loop-node" data-step="5">
+                  <span class="loop-index">06</span>
+                  <span class="loop-name">Challenger</span>
+                </button>
+              </li>
+            </ol>
+            <div class="loop-detail">
+              <p class="loop-detail-kicker" data-loop-kicker>01 · Retrieve</p>
+              <p data-loop-copy>
+                Documents are retrieved through the RAGTIME Search API. A local
+                copy of the corpus is not required.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="framework" class="section section-tint">
+        <div class="wrap">
+          <div class="section-intro reveal">
+            <p class="section-kicker">Framework</p>
+            <h2>Four packages. One orchestrator.</h2>
+            <p>
+              <code>crucible/</code> and <code>prefnugget/</code> do not import
+              each other. Only <code>research/</code> closes the loop.
+            </p>
+          </div>
+
+          <div class="package-grid">
+            <article class="package reveal">
+              <p class="package-id">rag_framework/</p>
+              <h3>Shared substrate</h3>
+              <p>
+                OpenRouter LLM client, RAGTIME Search API, and the document and
+                query models used by every system.
+              </p>
+            </article>
+            <article class="package reveal">
+              <p class="package-id">crucible/</p>
+              <h3>Cited reports</h3>
+              <p>
+                Request nuggets, supported-answer extraction, cited report
+                assembly, and citation refinement.
+              </p>
+            </article>
+            <article class="package reveal">
+              <p class="package-id">prefnugget/</p>
+              <h3>Preference signal</h3>
+              <p>
+                Pairwise ranking, contrastive nugget extraction, and 0–5 nugget
+                grading.
+              </p>
+            </article>
+            <article class="package package-primary reveal">
+              <p class="package-id">research/</p>
+              <h3>The closed loop</h3>
+              <p>
+                Preference-learning loop, convergence criteria, and the
+                five-system RAGTIME benchmark.
+              </p>
+            </article>
+          </div>
+
+          <p class="quiet supporting reveal">
+            Supporting directories: <code>experiments/</code> for YAML configs,
+            <code>examples/</code> for command-line entry points, and
+            <code>scripts/</code> for dataset setup and cache warming.
+          </p>
+        </div>
+      </section>
+
+      <section id="benchmark" class="section">
+        <div class="wrap">
+          <div class="section-intro reveal">
+            <p class="section-kicker">Benchmark</p>
+            <h2>Five systems, one retrieval set.</h2>
+            <p>
+              Evaluation uses TREC RAGTIME (Tier B). Every system receives the
+              same topics and the same retrieved documents.
+            </p>
+          </div>
+
+          <div class="system-layout reveal" data-systems>
+            <div class="system-list" role="list">
+              <button type="button" class="system-item is-active" data-system="0">
+                <span class="system-id">preference_loop_full</span>
+                <span class="system-role">Proposed</span>
+              </button>
+              <button type="button" class="system-item" data-system="1">
+                <span class="system-id">preference_loop_1round</span>
+                <span class="system-role">Ablation</span>
+              </button>
+              <button type="button" class="system-item" data-system="2">
+                <span class="system-id">crucible_dual_best</span>
+                <span class="system-role">Ablation</span>
+              </button>
+              <button type="button" class="system-item" data-system="3">
+                <span class="system-id">crucible_single</span>
+                <span class="system-role">Baseline</span>
+              </button>
+              <button type="button" class="system-item" data-system="4">
+                <span class="system-id">vanilla_rag</span>
+                <span class="system-role">Baseline</span>
+              </button>
+            </div>
+            <div class="system-detail">
+              <p class="system-detail-kicker" data-system-kicker>Proposed method</p>
+              <h3 data-system-title>preference_loop_full</h3>
+              <p data-system-copy>
+                The full iterative loop: dual reports, contrastive nuggets, then
+                challenger rounds until convergence.
+              </p>
+            </div>
+          </div>
+
+          <div class="metrics reveal">
+            <div class="metric">
+              <h3>Gold nugget coverage</h3>
+              <p>Fraction of RAGTIME gold questions graded ≥ 4.</p>
+            </div>
+            <div class="metric">
+              <h3>Gold mean / max grade</h3>
+              <p>PrefNugget 0–5 coverage of the gold rubric.</p>
+            </div>
+            <div class="metric">
+              <h3>Query-only coverage</h3>
+              <p>Coverage of generic query-only nuggets, used as an ablation.</p>
+            </div>
+            <div class="metric">
+              <h3>Citation coverage</h3>
+              <p>Fraction of report sentences that carry a citation.</p>
+            </div>
+            <div class="metric">
+              <h3>Citation validity</h3>
+              <p>Fraction of citations that resolve to a retrieved document ID.</p>
+            </div>
+            <div class="metric">
+              <h3>RAGTIME F1 proxy</h3>
+              <p>Harmonic mean of gold coverage and citation validity.</p>
+            </div>
+            <div class="metric">
+              <h3>Pairwise win rate</h3>
+              <p>Rate at which the full loop is preferred over each baseline.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="ideas" class="section section-tint">
+        <div class="wrap">
+          <div class="section-intro reveal">
+            <p class="section-kicker">Ideas</p>
+            <h2>What the loop is testing.</h2>
+          </div>
+
+          <div class="idea-list">
+            <article class="idea reveal">
+              <p class="idea-num">01</p>
+              <h3>Actionable feedback over scores</h3>
+              <p>
+                Pairwise preference judgments give attribute-specific signal.
+                A scalar score does not tell the next report what it missed.
+              </p>
+            </article>
+            <article class="idea reveal">
+              <p class="idea-num">02</p>
+              <h3>Nuggets that a single pass misses</h3>
+              <p>
+                Preference-discovered nuggets should cover facets a one-shot
+                generator never writes down, raising gold coverage and citation
+                quality relative to one-pass CRUCIBLE and a query-only baseline.
+              </p>
+            </article>
+            <article class="idea reveal">
+              <p class="idea-num">03</p>
+              <h3>The loop those papers leave open</h3>
+              <p>
+                This repository is the closed generation–evaluation loop left as
+                future work by CRUCIBLE (ECIR 2026), PrefNugget / Too Many
+                Questions (SIGIR 2026), and Insider Knowledge (ECIR 2026).
+              </p>
+            </article>
+          </div>
+
+          <aside class="limits reveal">
+            <p class="limits-kicker">Still open</p>
+            <p>
+              The current evaluation used a small topic set and the same LLM for
+              generation and judging. Gold coverage is a shared ceiling across
+              pipelines. Extra rounds grow report length. Smarter stopping is
+              still unfinished. The larger question remains: judge-aligned
+              improvement is not yet gold-aligned improvement.
+            </p>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p>Copyright (c) 2026 Aaryan Patel. Released under the MIT License.</p>
+        <p>
+          <a href="mailto:apatel@exeter.edu">apatel@exeter.edu</a>
+          ·
+          <a
+            href="https://github.com/aaryangpatel/RAG/blob/main/documents/final_symposium_poster.pdf"
+            >Symposium poster (PDF)</a
+          >
+        </p>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
