@@ -10,6 +10,8 @@ Evaluation uses **TREC RAGTIME 2026** (Tier B). Documents are retrieved through 
 
 [Symposium poster (PDF)](documents/final_symposium_poster.pdf)
 
+Project site: open [`website/`](website/) for the deployable project page.
+
 ---
 
 ## Method
