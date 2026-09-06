@@ -7,27 +7,27 @@
 const LOOP_STEPS = [
   {
     kicker: "01 · Retrieve",
-    copy: "Documents are retrieved through the RAGTIME Search API. A local copy of the corpus is not required.",
+    copy: "Pull supporting documents for the topic. The system queries a search API, so the full corpus does not need to live on disk.",
   },
   {
     kicker: "02 · Dual reports",
-    copy: "CRUCIBLE writes two reports from the request nugget bank: abstractive Report A and extractive Report B.",
+    copy: "Write two cited drafts from the same question bank: one abstractive, one extractive.",
   },
   {
     kicker: "03 · Judge",
-    copy: "PrefNugget ranks the pair. The winner becomes the champion for the next comparison.",
+    copy: "Compare the two drafts and keep the stronger one as champion.",
   },
   {
     kicker: "04 · Contrast",
-    copy: "The judge extracts contrastive nuggets: questions the winner answered more completely than the loser.",
+    copy: "Write new questions for information the winner covered more completely than the loser.",
   },
   {
     kicker: "05 · Merge",
-    copy: "Those contrastive nuggets are merged into the existing bank so later reports must cover the missed facets.",
+    copy: "Add those questions to the bank so later drafts cannot skip the same gaps.",
   },
   {
     kicker: "06 · Challenger",
-    copy: "One improved report is generated and judged against the champion. The loop returns to judging until it stops.",
+    copy: "Write one improved draft and compare it with the champion. Repeat until the loop stops.",
   },
 ];
 
@@ -35,27 +35,27 @@ const SYSTEMS = [
   {
     kicker: "Proposed method",
     title: "preference_loop_full",
-    copy: "The full iterative loop: dual reports, contrastive nuggets, then challenger rounds until convergence.",
+    copy: "Proposed method. Full loop: two opening drafts, contrastive questions, then challenger rounds until stop.",
   },
   {
     kicker: "Ablation",
     title: "preference_loop_1round",
-    copy: "Dual reports and contrastive nuggets only. No challenger rounds after the first judgment.",
+    copy: "Ablation. Dual drafts and contrastive questions only. No later challenger rounds.",
   },
   {
     kicker: "Ablation",
     title: "crucible_dual_best",
-    copy: "Best of the round-0 pair, without further iteration or a merged contrastive bank.",
+    copy: "Ablation. Keeps the better of the first two drafts and stops.",
   },
   {
     kicker: "Baseline",
     title: "crucible_single",
-    copy: "One-pass CRUCIBLE using request nuggets only. No pairwise judge and no preference loop.",
+    copy: "Baseline. One CRUCIBLE pass from the original question bank. No pairwise judge.",
   },
   {
     kicker: "Baseline",
     title: "vanilla_rag",
-    copy: "Query-only nuggets with single-pass extraction. The simplest retrieval-to-report control.",
+    copy: "Baseline. Questions come from the query alone, then a single extraction pass.",
   },
 ];
 

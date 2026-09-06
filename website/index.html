@@ -6,7 +6,7 @@
     <title>Preference-Learning RAG</title>
     <meta
       name="description"
-      content="An iterative retrieval-augmented generation system that closes the loop between CRUCIBLE cited reports and PrefNugget contrastive nuggets."
+      content="Research system that turns preference comparisons into better cited RAG reports."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -33,23 +33,21 @@
     <main>
       <section id="overview" class="hero">
         <div class="wrap">
-          <p class="eyebrow">TREC RAGTIME · Preference Learning</p>
           <h1>Preference-Learning RAG</h1>
           <p class="deck">
-            Iterative retrieval-augmented generation that closes the loop between
-            CRUCIBLE cited reports and PrefNugget contrastive nuggets.
+            A research system that writes cited reports, compares them, and uses
+            what the better report covered to improve the next draft.
           </p>
           <p class="meta-row">
             <span>Aaryan Patel</span>
             <span>Phillips Exeter Academy</span>
-            <span>Advisor Prof. Laura Dietz, UNH</span>
             <span>MIT License</span>
           </p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="#method">See the method</a>
             <a
               class="btn btn-ghost"
-              href="https://github.com/aaryangpatel/RAG"
+              href="https://github.com/aaryangpatel/Iterative-Preference-Learning-RAG-Framework"
               >GitHub repository</a
             >
           </div>
@@ -60,21 +58,20 @@
         <div class="wrap split">
           <div class="reveal">
             <p class="section-kicker">Method</p>
-            <h2>Preference feedback writes the next report.</h2>
+            <h2>Compare two reports. Teach the next one.</h2>
             <p>
-              CRUCIBLE produces a cited report from a request-derived nugget
-              bank. PrefNugget compares two reports, then extracts questions the
-              winner answered more completely than the loser. Those contrastive
-              nuggets are merged into the bank and used to generate a challenger.
+              Standard RAG writes once and stops. This system starts from a
+              nugget bank — short questions the report should answer — and writes
+              two drafts, one more abstractive and one more extractive. A judge
+              picks the stronger draft, then writes new questions for facts the
+              winner covered and the loser missed. Those questions join the bank.
+              The next draft has to answer them.
             </p>
             <p class="quiet">
-              Round 0 is the dual pair. Rounds 1+ generate one challenger. The
-              loop stops when <code>research/convergence.py</code> hits the
-              round limit, finds no new nuggets for several rounds, or keeps the
-              same champion. Defaults from
-              <code>experiments/preference_loop.yml</code>:
-              <code>max_rounds: 3</code>, <code>base_nuggets_count: 8</code>,
-              <code>max_contrastive_nuggets: 10</code>.
+              The first round produces the pair. Later rounds write one
+              challenger against the current champion. The loop stops at a round
+              limit, when no new questions appear, or when the same report keeps
+              winning.
             </p>
           </div>
 
@@ -124,8 +121,8 @@
             <div class="loop-detail">
               <p class="loop-detail-kicker" data-loop-kicker>01 · Retrieve</p>
               <p data-loop-copy>
-                Documents are retrieved through the RAGTIME Search API. A local
-                copy of the corpus is not required.
+                Pull supporting documents for the topic. The system queries a
+                search API, so the full corpus does not need to live on disk.
               </p>
             </div>
           </div>
@@ -136,52 +133,52 @@
         <div class="wrap">
           <div class="section-intro reveal">
             <p class="section-kicker">Framework</p>
-            <h2>Four packages. One orchestrator.</h2>
+            <h2>Separate generation from judgment.</h2>
             <p>
-              <code>crucible/</code> and <code>prefnugget/</code> do not import
-              each other. Only <code>research/</code> closes the loop.
+              Report writing and preference judging are separate packages. A
+              third package runs the loop between them.
             </p>
           </div>
 
           <div class="package-grid">
             <article class="package reveal">
               <p class="package-id">rag_framework/</p>
-              <h3>Shared substrate</h3>
+              <h3>Shared infrastructure</h3>
               <p>
-                OpenRouter LLM client, RAGTIME Search API, and the document and
-                query models used by every system.
+                Language-model client, document search, and the shared query and
+                document types.
               </p>
             </article>
             <article class="package reveal">
               <p class="package-id">crucible/</p>
-              <h3>Cited reports</h3>
+              <h3>Report generation</h3>
               <p>
-                Request nuggets, supported-answer extraction, cited report
-                assembly, and citation refinement.
+                Builds the question bank, finds supported answers, assembles a
+                cited report, and cleans citations.
               </p>
             </article>
             <article class="package reveal">
               <p class="package-id">prefnugget/</p>
-              <h3>Preference signal</h3>
+              <h3>Preference judging</h3>
               <p>
-                Pairwise ranking, contrastive nugget extraction, and 0–5 nugget
-                grading.
+                Ranks two reports, extracts the questions that separate them,
+                and grades coverage from 0 to 5.
               </p>
             </article>
             <article class="package package-primary reveal">
               <p class="package-id">research/</p>
-              <h3>The closed loop</h3>
+              <h3>Loop and evaluation</h3>
               <p>
-                Preference-learning loop, convergence criteria, and the
-                five-system RAGTIME benchmark.
+                Runs the preference loop, decides when to stop, and compares five
+                systems on the same topics.
               </p>
             </article>
           </div>
 
           <p class="quiet supporting reveal">
-            Supporting directories: <code>experiments/</code> for YAML configs,
-            <code>examples/</code> for command-line entry points, and
-            <code>scripts/</code> for dataset setup and cache warming.
+            Configs live in <code>experiments/</code>, command-line entry points
+            in <code>examples/</code>, and dataset setup in
+            <code>scripts/</code>.
           </p>
         </div>
       </section>
@@ -190,10 +187,11 @@
         <div class="wrap">
           <div class="section-intro reveal">
             <p class="section-kicker">Benchmark</p>
-            <h2>Five systems, one retrieval set.</h2>
+            <h2>Five systems. Same evidence.</h2>
             <p>
-              Evaluation uses TREC RAGTIME (Tier B). Every system receives the
-              same topics and the same retrieved documents.
+              Each system answers the same topics with the same retrieved
+              documents, so differences come from how the report is written, not
+              from a different search set.
             </p>
           </div>
 
@@ -224,40 +222,40 @@
               <p class="system-detail-kicker" data-system-kicker>Proposed method</p>
               <h3 data-system-title>preference_loop_full</h3>
               <p data-system-copy>
-                The full iterative loop: dual reports, contrastive nuggets, then
-                challenger rounds until convergence.
+                Proposed method. Full loop: two opening drafts, contrastive
+                questions, then challenger rounds until stop.
               </p>
             </div>
           </div>
 
           <div class="metrics reveal">
             <div class="metric">
-              <h3>Gold nugget coverage</h3>
-              <p>Fraction of RAGTIME gold questions graded ≥ 4.</p>
+              <h3>Gold coverage</h3>
+              <p>Share of human-written gold questions graded 4 or 5.</p>
             </div>
             <div class="metric">
               <h3>Gold mean / max grade</h3>
-              <p>PrefNugget 0–5 coverage of the gold rubric.</p>
+              <p>Average and best 0–5 grade against that gold rubric.</p>
             </div>
             <div class="metric">
               <h3>Query-only coverage</h3>
-              <p>Coverage of generic query-only nuggets, used as an ablation.</p>
+              <p>Coverage of generic questions derived from the query, used as a control.</p>
             </div>
             <div class="metric">
               <h3>Citation coverage</h3>
-              <p>Fraction of report sentences that carry a citation.</p>
+              <p>Share of report sentences that include a citation.</p>
             </div>
             <div class="metric">
               <h3>Citation validity</h3>
-              <p>Fraction of citations that resolve to a retrieved document ID.</p>
+              <p>Share of citations that point to a retrieved document.</p>
             </div>
             <div class="metric">
-              <h3>RAGTIME F1 proxy</h3>
+              <h3>Coverage–citation F1</h3>
               <p>Harmonic mean of gold coverage and citation validity.</p>
             </div>
             <div class="metric">
               <h3>Pairwise win rate</h3>
-              <p>Rate at which the full loop is preferred over each baseline.</p>
+              <p>How often the full loop is preferred over each baseline.</p>
             </div>
           </div>
         </div>
@@ -267,34 +265,37 @@
         <div class="wrap">
           <div class="section-intro reveal">
             <p class="section-kicker">Ideas</p>
-            <h2>What the loop is testing.</h2>
+            <h2>Why close the loop.</h2>
           </div>
 
           <div class="idea-list">
             <article class="idea reveal">
               <p class="idea-num">01</p>
-              <h3>Actionable feedback over scores</h3>
+              <h3>Feedback that can be used</h3>
               <p>
-                Pairwise preference judgments give attribute-specific signal.
-                A scalar score does not tell the next report what it missed.
+                A single quality score does not say what to fix. A pairwise
+                judgment can name the missing facts and turn them into questions
+                for the next draft.
               </p>
             </article>
             <article class="idea reveal">
               <p class="idea-num">02</p>
-              <h3>Nuggets that a single pass misses</h3>
+              <h3>Coverage a single pass misses</h3>
               <p>
-                Preference-discovered nuggets should cover facets a one-shot
-                generator never writes down, raising gold coverage and citation
-                quality relative to one-pass CRUCIBLE and a query-only baseline.
+                One generation pass often skips facets of the request. Adding
+                contrastive questions is meant to raise gold coverage and citation
+                quality against one-pass CRUCIBLE and a query-only baseline.
               </p>
             </article>
             <article class="idea reveal">
               <p class="idea-num">03</p>
-              <h3>The loop those papers leave open</h3>
+              <h3>Prior work</h3>
               <p>
-                This repository is the closed generation–evaluation loop left as
-                future work by CRUCIBLE (ECIR 2026), PrefNugget / Too Many
-                Questions (SIGIR 2026), and Insider Knowledge (ECIR 2026).
+                CRUCIBLE (ECIR 2026) generates cited reports from nuggets.
+                PrefNugget / Too Many Questions (SIGIR 2026) derives contrastive
+                questions from preferences. Insider Knowledge (ECIR 2026) argues
+                for reporting gold coverage separately. This project connects
+                those pieces into one generation–evaluation loop.
               </p>
             </article>
           </div>
@@ -302,11 +303,12 @@
           <aside class="limits reveal">
             <p class="limits-kicker">Still open</p>
             <p>
-              The current evaluation used a small topic set and the same LLM for
-              generation and judging. Gold coverage is a shared ceiling across
-              pipelines. Extra rounds grow report length. Smarter stopping is
-              still unfinished. The larger question remains: judge-aligned
-              improvement is not yet gold-aligned improvement.
+              Early runs used a small topic set and the same model for writing
+              and judging, which can favor judge-aligned metrics. Gold coverage
+              stayed low across systems, so retrieval and model choice are likely
+              a ceiling. Extra rounds lengthen reports. Better stopping rules, a
+              separate judge model, and closing the gap between judge preference
+              and gold coverage remain open.
             </p>
           </aside>
         </div>
@@ -320,7 +322,7 @@
           <a href="mailto:apatel@exeter.edu">apatel@exeter.edu</a>
           ·
           <a
-            href="https://github.com/aaryangpatel/RAG/blob/main/documents/final_symposium_poster.pdf"
+            href="https://github.com/aaryangpatel/Iterative-Preference-Learning-RAG-Framework/blob/main/documents/final_symposium_poster.pdf"
             >Symposium poster (PDF)</a
           >
         </p>
